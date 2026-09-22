@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/IncidentHub.Console/IncidentHub.Console.csproj" />
+  </Folder>
+</Solution>

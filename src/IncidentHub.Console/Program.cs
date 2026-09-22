@@ -3,28 +3,29 @@ using IncidentHub;
 Console.WriteLine("IncidentHub");
 Console.WriteLine();
 
-var incident = new Incident();
-incident.Id = Guid.NewGuid();
-incident.Title = "Hameçonnage ciblant la comptabilité";
-incident.Description = "Plusieurs e-mails imitant la banque ont été reçus.";
-incident.Severity = Severity.High;
-incident.Status = IncidentStatus.Open;
-incident.CreatedAt = DateTime.Now;
+// L'incident est créé en une ligne, avec les informations obligatoires.
+// Id, statut et date de création sont fixés par la classe.
+var incident = new Incident(
+    "Hameçonnage ciblant la comptabilité",
+    "Plusieurs e-mails imitant la banque ont été reçus.",
+    Severity.High);
 
 Afficher(incident);
 
-// Cette ligne ne compile plus : "n'importe quoi" n'est pas un IncidentStatus.
-// incident.Status = "n'importe quoi";
+// Ces lignes ne compilent plus : les setters sont privés.
+// incident.Title = "";
+// incident.Status = IncidentStatus.Closed;
+// incident.CreatedAt = new DateTime(1990, 1, 1);
 
-// Mais d'autres problèmes restent possibles :
-// titre vide, statut qui revient en arrière, date modifiable...
-incident.Title = "";
-incident.Status = IncidentStatus.Closed;
-incident.Status = IncidentStatus.Open;
-incident.CreatedAt = new DateTime(1990, 1, 1);
-
-Console.WriteLine("Après modification sans contrôle :");
-Afficher(incident);
+// Un titre vide est refusé dès la création.
+try
+{
+    var incidentSansTitre = new Incident("", "Pas de titre", Severity.Low);
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"Création refusée : {ex.Message}");
+}
 
 static void Afficher(Incident incident)
 {
@@ -33,6 +34,6 @@ static void Afficher(Incident incident)
     Console.WriteLine($"Description : {incident.Description}");
     Console.WriteLine($"Sévérité    : {incident.Severity}");
     Console.WriteLine($"Statut      : {incident.Status}");
-    Console.WriteLine($"Créé le     : {incident.CreatedAt}");
+    Console.WriteLine($"Créé le     : {incident.CreatedAt:yyyy-MM-dd HH:mm:ss} (UTC)");
     Console.WriteLine();
 }

@@ -7,16 +7,21 @@ var incident = new Incident();
 incident.Id = Guid.NewGuid();
 incident.Title = "Hameçonnage ciblant la comptabilité";
 incident.Description = "Plusieurs e-mails imitant la banque ont été reçus.";
-incident.Severity = "High";
-incident.Status = "Open";
+incident.Severity = Severity.High;
+incident.Status = IncidentStatus.Open;
 incident.CreatedAt = DateTime.Now;
 
 Afficher(incident);
 
-// Problème : rien n'empêche d'écrire des valeurs absurdes.
-incident.Status = "n'importe quoi";
-incident.Severity = "très très grave";
+// Cette ligne ne compile plus : "n'importe quoi" n'est pas un IncidentStatus.
+// incident.Status = "n'importe quoi";
+
+// Mais d'autres problèmes restent possibles :
+// titre vide, statut qui revient en arrière, date modifiable...
 incident.Title = "";
+incident.Status = IncidentStatus.Closed;
+incident.Status = IncidentStatus.Open;
+incident.CreatedAt = new DateTime(1990, 1, 1);
 
 Console.WriteLine("Après modification sans contrôle :");
 Afficher(incident);

@@ -3,29 +3,42 @@ using IncidentHub;
 Console.WriteLine("IncidentHub");
 Console.WriteLine();
 
-// L'incident est créé en une ligne, avec les informations obligatoires.
-// Id, statut et date de création sont fixés par la classe.
+var alice = new User("Alice Martin", "alice.martin@exemple.be");
+
+// Cas valide : l'incident suit le cycle prévu.
 var incident = new Incident(
     "Hameçonnage ciblant la comptabilité",
     "Plusieurs e-mails imitant la banque ont été reçus.",
-    Severity.High);
+    Severity.High,
+    alice);
 
 Afficher(incident);
 
-// Ces lignes ne compilent plus : les setters sont privés.
-// incident.Title = "";
-// incident.Status = IncidentStatus.Closed;
-// incident.CreatedAt = new DateTime(1990, 1, 1);
+incident.StartWork();
+Console.WriteLine($"Prise en charge -> {incident.Status}");
+incident.Resolve();
+Console.WriteLine($"Résolution      -> {incident.Status}");
+incident.Close();
+Console.WriteLine($"Clôture         -> {incident.Status}");
+Console.WriteLine();
 
-// Un titre vide est refusé dès la création.
+// Cas refusé : on tente de clôturer un incident qui n'a pas été traité.
+var autreIncident = new Incident(
+    "Poste infecté par un rançongiciel",
+    "Fichiers chiffrés sur le poste d'accueil.",
+    Severity.Critical,
+    alice);
+
 try
 {
-    var incidentSansTitre = new Incident("", "Pas de titre", Severity.Low);
+    autreIncident.Close();
 }
-catch (ArgumentException ex)
+catch (InvalidOperationException ex)
 {
-    Console.WriteLine($"Création refusée : {ex.Message}");
+    Console.WriteLine($"Action refusée : {ex.Message}");
 }
+
+Console.WriteLine($"Statut inchangé : {autreIncident.Status}");
 
 static void Afficher(Incident incident)
 {
@@ -35,5 +48,6 @@ static void Afficher(Incident incident)
     Console.WriteLine($"Sévérité    : {incident.Severity}");
     Console.WriteLine($"Statut      : {incident.Status}");
     Console.WriteLine($"Créé le     : {incident.CreatedAt:yyyy-MM-dd HH:mm:ss} (UTC)");
+    Console.WriteLine($"Signalé par : {incident.ReportedBy.Name} <{incident.ReportedBy.Email}>");
     Console.WriteLine();
 }

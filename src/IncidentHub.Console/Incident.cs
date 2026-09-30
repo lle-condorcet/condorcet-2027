@@ -13,6 +13,9 @@ public class Incident
     public DateTime CreatedAt { get; private set; }
     public User ReportedBy { get; private set; }
 
+    // Analyste chargé de l'incident. null tant que personne n'est assigné.
+    public Analyst? AssignedTo { get; private set; }
+
     public Incident(string title, string description, Severity severity, User reportedBy)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -34,9 +37,33 @@ public class Incident
         ReportedBy = reportedBy;
     }
 
+    // Confie l'incident à un analyste.
+    // Le type du paramètre fait déjà une partie du travail :
+    // on ne peut pas passer un Reporter ou un Manager.
+    public void AssignTo(Analyst analyst)
+    {
+        if (analyst is null)
+        {
+            throw new ArgumentNullException(nameof(analyst), "Il faut indiquer un analyste.");
+        }
+
+        if (Status == IncidentStatus.Closed)
+        {
+            throw new InvalidOperationException("Un incident clôturé ne peut plus être assigné.");
+        }
+
+        AssignedTo = analyst;
+    }
+
     // Un analyste commence à traiter l'incident.
     public void StartWork()
     {
+        if (AssignedTo is null)
+        {
+            throw new InvalidOperationException(
+                "Impossible de démarrer : aucun analyste n'est assigné à l'incident.");
+        }
+
         ChangeStatus(from: IncidentStatus.Open, to: IncidentStatus.InProgress);
     }
 

@@ -1,6 +1,7 @@
 namespace IncidentHub;
 
-// Personne qui utilise la plateforme (par exemple pour signaler un incident).
+// Personne qui utilise la plateforme.
+// C'est la classe de base : Reporter, Analyst et Manager en héritent.
 public class User
 {
     public string Name { get; private set; }
@@ -20,5 +21,11 @@ public class User
 
         Name = name.Trim();
         Email = email.Trim();
+    }
+
+    // protected : utilisable par les classes dérivées, invisible depuis Program.cs.
+    protected string Identity()
+    {
+        return $"{Name} <{Email}>";
     }
 }

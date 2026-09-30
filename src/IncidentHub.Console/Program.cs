@@ -4,6 +4,8 @@ Console.WriteLine("IncidentHub");
 Console.WriteLine();
 
 // Trois profils, trois classes qui héritent toutes de User.
+// Describe() est écrite une seule fois, dans User ;
+// chaque classe fournit seulement son RoleName().
 var alice = new Reporter("Alice Martin", "alice.martin@exemple.be");
 var karim = new Analyst("Karim Diallo", "karim.diallo@exemple.be", "SOC niveau 1");
 var sophie = new Manager("Sophie Leroy", "sophie.leroy@exemple.be");
@@ -16,6 +18,11 @@ Console.WriteLine();
 // Name et Email viennent de User : Analyst en hérite sans les réécrire.
 Console.WriteLine($"Karim s'appelle {karim.Name} et fait partie de l'équipe {karim.Team}.");
 Console.WriteLine();
+
+// User est abstraite : la ligne suivante ne compile plus (erreur CS0144).
+// Sur la plateforme, un utilisateur a toujours un rôle précis :
+// créer un « User » tout court n'aurait pas de sens.
+// var inconnu = new User("Jean Dupont", "jean.dupont@exemple.be");
 
 // Identity() est protected : la ligne suivante ne compile pas.
 // Console.WriteLine(karim.Identity());

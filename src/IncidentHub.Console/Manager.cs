@@ -7,8 +7,8 @@ public class Manager : User
     {
     }
 
-    public string Describe()
+    public override string RoleName()
     {
-        return $"Responsable : {Identity()}";
+        return "Responsable";
     }
 }

@@ -15,8 +15,8 @@ public class Analyst : User
         Team = team.Trim();
     }
 
-    public string Describe()
+    public override string RoleName()
     {
-        return $"Analyste : {Identity()}, équipe {Team}";
+        return $"Analyste ({Team})";
     }
 }

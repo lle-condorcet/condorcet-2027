@@ -7,8 +7,8 @@ public class Reporter : User
     {
     }
 
-    public string Describe()
+    public override string RoleName()
     {
-        return $"Déclarant : {Identity()}";
+        return "Déclarant";
     }
 }

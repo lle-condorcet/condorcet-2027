@@ -5,10 +5,12 @@ Dépôt support du cours **Complément Application** (Bachelier en cybersécurit
 IncidentHub est le fil rouge du cours : une plateforme de signalement
 d'incidents de sécurité. Ce dépôt montre, étape par étape, comment une
 classe `Incident` évolue d'une version naïve vers une version qui protège ses
-données et applique des règles métier.
+données et applique des règles métier (séance 1), puis comment le modèle
+s'enrichit avec l'héritage, l'abstraction, les interfaces et la composition
+(séance 2).
 
-En séance 1, le code est **lu et commenté ensemble**, il n'est pas écrit en
-direct. Chaque étape correspond à un tag Git.
+Le code est **lu et commenté ensemble**, il n'est pas écrit en direct.
+Chaque étape correspond à un tag Git.
 
 ## Prérequis
 
@@ -45,9 +47,25 @@ git diff s01-etape1-classe-incident s01-etape2-enum-severity
 | `s01-etape3-encapsulation` | Setters privés et constructeur : un incident ne peut plus être créé sans titre ni sévérité. `Id` et `CreatedAt` sont fixés par la classe elle-même. |
 | `s01-etape4-regles-metier` | Méthodes `StartWork()`, `Resolve()`, `Close()` : seul le cycle Open → InProgress → Resolved → Closed est autorisé. Ajout de la classe `User` (qui a signalé l'incident). Le programme montre un cas accepté puis un cas refusé. |
 
-La branche `main` correspond à l'état final `s01-etape4-regles-metier`.
+## Séance 2 — POO : héritage, abstraction, interface, composition
+
+| Tag | Ce que l'on montre |
+|-----|--------------------|
+| `s02-etape1-heritage` | `User` devient une classe de base. `Reporter`, `Analyst` (avec `Team`) et `Manager` en héritent : `Name` et `Email` ne sont écrits qu'une fois. Méthode `protected Identity()` utilisable par les classes dérivées, pas depuis `Program.cs`. `Incident` reçoit `AssignedTo` et `AssignTo(Analyst)` ; `StartWork()` refuse un incident sans analyste. |
+| `s02-etape2-abstraction` | `User` devient `abstract` : `new User(...)` ne compile plus. Méthode abstraite `RoleName()` que chaque rôle doit fournir, et `Describe()` écrite une seule fois dans `User`. |
+| `s02-etape3-interface` | Interface `INotifier` et deux implémentations `EmailNotifier` et `TeamsNotifier`. `Incident` n'en dépend pas : c'est `Program.cs` qui notifie après chaque changement d'état. |
+| `s02-etape4-polymorphisme-composition` | Une `List<User>` parcourue avec `Describe()` (polymorphisme), une `List<INotifier>` pour notifier sur tous les canaux. Classe `Comment` : l'incident possède ses commentaires (composition), exposés en lecture seule, ajoutés via `AddComment()`. |
+
+La branche `main` correspond à l'état final `s02-etape4-polymorphisme-composition`.
+
+```bash
+git diff s01-etape4-regles-metier s02-etape1-heritage
+git diff s02-etape3-interface s02-etape4-polymorphisme-composition -- src/IncidentHub.Console/Incident.cs
+```
 
 ## Branches « démo IA »
+
+### Séance 1
 
 Deux branches partent de `s01-etape0-solution-vide` et contiennent chacune une
 classe `Incident` telle qu'un assistant IA pourrait la produire.
@@ -62,8 +80,19 @@ git checkout demo/s01-ia-naif
 git diff demo/s01-ia-naif demo/s01-ia-structure -- src/IncidentHub.Console/Incident.cs
 ```
 
-Le fichier `Incident.cs` de ces branches est une sortie de référence. Avant le
-cours, il est remplacé par la sortie réellement obtenue (en notant la date,
+### Séance 2
+
+| Branche | Contenu | Ce que l'on observe |
+|---------|---------|---------------------|
+| `demo/s02-ia-diagramme` | `docs/modele-genere-par-ia.md` : diagramme de classes Mermaid obtenu avec un prompt naïf (« Fais-moi le diagramme de classes d'IncidentHub »). Part de `s02-etape4-polymorphisme-composition`. | Chaîne d'héritage abusive (`Manager` → `Analyst` → `Reporter` → `User`), `Comment` qui hérite d'`Incident`, tout en public, aucune multiplicité, statut en `String`. À comparer avec le code de `main`. |
+
+```bash
+git checkout demo/s02-ia-diagramme
+# ouvrir docs/modele-genere-par-ia.md dans Rider ou sur la forge (rendu Mermaid)
+```
+
+Les fichiers de ces branches sont des sorties de référence. Avant le cours,
+ils sont remplacés par la sortie réellement obtenue (en notant la date,
 l'outil et le modèle utilisés).
 
 ## Conventions

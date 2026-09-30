@@ -16,6 +16,12 @@ public class Incident
     // Analyste chargé de l'incident. null tant que personne n'est assigné.
     public Analyst? AssignedTo { get; private set; }
 
+    // Composition : l'incident possède sa liste de commentaires.
+    // La liste est privée ; l'extérieur ne reçoit qu'une vue en lecture seule
+    // et doit passer par AddComment pour en ajouter.
+    private readonly List<Comment> _comments = new();
+    public IReadOnlyList<Comment> Comments => _comments.AsReadOnly();
+
     public Incident(string title, string description, Severity severity, User reportedBy)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -53,6 +59,17 @@ public class Incident
         }
 
         AssignedTo = analyst;
+    }
+
+    // N'importe quel utilisateur peut commenter (Reporter, Analyst, Manager).
+    public void AddComment(User author, string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            throw new ArgumentException("Un commentaire ne peut pas être vide.");
+        }
+
+        _comments.Add(new Comment(text, author));
     }
 
     // Un analyste commence à traiter l'incident.

@@ -91,6 +91,7 @@ Console.WriteLine("========== Séance 3 ==========");
 Console.WriteLine();
 ValeurReferenceDemo.Run();
 NombresDemo.Run();
+NullDemo.Run();
 
 static void NotifierTous(List<INotifier> notifiers, Incident incident, string message)
 {

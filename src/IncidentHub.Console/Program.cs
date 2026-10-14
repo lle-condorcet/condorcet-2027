@@ -93,6 +93,19 @@ ValeurReferenceDemo.Run();
 NombresDemo.Run();
 NullDemo.Run();
 
+// Démo IA : rapport sur un incident que personne n'a encore pris en charge.
+// Le build ne montre aucun avertissement, mais l'exécution plante :
+//   Unhandled exception. System.NullReferenceException:
+//   Object reference not set to an instance of an object.
+//      at IncidentHub.Demos.RapportIncident.Afficher(Incident incident)
+// On laisse planter volontairement (pas de try/catch).
+var nouvelIncident = new Incident(
+    "Accès VPN depuis un pays inhabituel",
+    "Connexion réussie à 3 h du matin.",
+    Severity.High,
+    alice);
+RapportIncident.Afficher(nouvelIncident);
+
 static void NotifierTous(List<INotifier> notifiers, Incident incident, string message)
 {
     foreach (INotifier notifier in notifiers)

@@ -12,6 +12,8 @@ public class Manager : User
         return "Responsable";
     }
 
+    public override Permission Permissions => Permission.All;
+
     // override : le responsable remplace la signature par défaut.
     public override string Signature()
     {

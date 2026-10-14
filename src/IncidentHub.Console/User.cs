@@ -28,6 +28,9 @@ public abstract class User
     // Chaque classe dérivée est obligée de dire quel est son rôle.
     public abstract string RoleName();
 
+    // Ce que ce rôle a le droit de faire. Chaque rôle donne sa réponse.
+    public abstract Permission Permissions { get; }
+
     // Écrite une seule fois ici, elle utilise le RoleName() de la classe réelle.
     public string Describe()
     {

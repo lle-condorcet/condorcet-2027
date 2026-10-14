@@ -13,4 +13,6 @@ public sealed class Reporter : User
     {
         return "Déclarant";
     }
+
+    public override Permission Permissions => Permission.Read | Permission.Comment;
 }

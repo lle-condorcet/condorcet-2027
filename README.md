@@ -7,7 +7,8 @@ d'incidents de sécurité. Ce dépôt montre, étape par étape, comment une
 classe `Incident` évolue d'une version naïve vers une version qui protège ses
 données et applique des règles métier (séance 1), puis comment le modèle
 s'enrichit avec l'héritage, l'abstraction, les interfaces et la composition
-(séance 2).
+(séance 2), et enfin les bases du langage C# : types, null, chaînes, static,
+virtual et enum `[Flags]` (séance 3).
 
 Le code est **lu et commenté ensemble**, il n'est pas écrit en direct.
 Chaque étape correspond à un tag Git.
@@ -56,11 +57,32 @@ git diff s01-etape1-classe-incident s01-etape2-enum-severity
 | `s02-etape3-interface` | Interface `INotifier` et deux implémentations `EmailNotifier` et `TeamsNotifier`. `Incident` n'en dépend pas : c'est `Program.cs` qui notifie après chaque changement d'état. |
 | `s02-etape4-polymorphisme-composition` | Une `List<User>` parcourue avec `Describe()` (polymorphisme), une `List<INotifier>` pour notifier sur tous les canaux. Classe `Comment` : l'incident possède ses commentaires (composition), exposés en lecture seule, ajoutés via `AddComment()`. |
 
-La branche `main` correspond à l'état final `s02-etape4-polymorphisme-composition`.
+La séance 2 se termine au tag `s02-etape4-polymorphisme-composition`.
 
 ```bash
 git diff s01-etape4-regles-metier s02-etape1-heritage
 git diff s02-etape3-interface s02-etape4-polymorphisme-composition -- src/IncidentHub.Console/Incident.cs
+```
+
+## Séance 3 — Le langage C# : types, null, chaînes, static, virtual
+
+Chaque thème a sa démo dans `src/IncidentHub.Console/Demos/`, appelée à la
+fin de `Program.cs` et affichée sous un titre `=== ... ===`.
+
+| Tag | Ce que l'on montre |
+|-----|--------------------|
+| `s03-etape1-valeur-reference` | `ValeurReferenceDemo` : copier un `int` donne une valeur indépendante ; copier une référence (un `Comment`, une `FicheContact`) donne deux variables vers le même objet. `struct Coordonnees` (copiée) contre `class FicheContact` (partagée). |
+| `s03-etape2-nombres` | `NombresDemo` : limites de `byte` à `ulong`, `int.MaxValue + 1` qui devient négatif en `unchecked`, `OverflowException` en `checked`, `0.1 + 0.2 == 0.3` faux en `double` et vrai en `decimal`, coût d'un incident en `decimal`. |
+| `s03-etape3-null` | `NullDemo` (avec `<Nullable>enable</Nullable>`) : `Analyst?` d'un incident non assigné, `?.`, `??`, `??=`, le `!` qui fait taire le compilateur et plante quand même, `string.IsNullOrWhiteSpace`. |
+| `s03-etape4-chaines` | `ChainesDemo` : interpolation, `string.Format`, formats `N2` et date, culture `fr-BE` contre `en-US`, `double.Parse` en `InvariantCulture`, méthodes usuelles (`Trim`, `Split`, `Replace`...), immuabilité, `StringBuilder`, chaînes `@"..."` et `"""..."""`. Rappel : jamais de SQL construit par interpolation. |
+| `s03-etape5-static` | Classe statique `IncidentNumbering` (`INC-0001`, `INC-0002`...), méthode d'extension `Severity.ToLabel()` (« Haute », « Critique »...). `StaticDemo` utilise aussi `Math.Max` et `DateTime.UtcNow`. |
+| `s03-etape6-virtual-override` | `User.Signature()` est `virtual`, `Manager` la redéfinit avec `override`. `Analyst` redéfinit `ToString()`. `Reporter` devient `sealed`. `VirtualDemo` : appel polymorphe sur une `List<User>`. |
+| `s03-etape7-flags` | Enum `[Flags] Permission` (Read, Comment, Assign, Close, All) et propriété abstraite `Permissions` sur `User`. `FlagsDemo` : `\|` pour combiner, `HasFlag` et `&` pour tester, valeur numérique et `ToString()` (« Read, Comment »). Parallèle avec les droits Unix `rwx` (4 + 2 + 1 = 7). |
+
+La branche `main` correspond à l'état final `s03-etape7-flags`.
+
+```bash
+git diff s03-etape5-static s03-etape6-virtual-override -- src/IncidentHub.Console/User.cs
 ```
 
 ## Branches « démo IA »
@@ -89,6 +111,18 @@ git diff demo/s01-ia-naif demo/s01-ia-structure -- src/IncidentHub.Console/Incid
 ```bash
 git checkout demo/s02-ia-diagramme
 # ouvrir docs/modele-genere-par-ia.md dans Rider ou sur la forge (rendu Mermaid)
+```
+
+### Séance 3
+
+| Branche | Contenu | Ce que l'on observe |
+|---------|---------|---------------------|
+| `demo/s03-ia-nullable` | `Demos/RapportIncident.cs` : code d'un étudiant « corrigé » par une IA avec le prompt « Corrige les avertissements de nullabilité de ce fichier. ». Part de `s03-etape3-null`. Commit au message volontairement trompeur. | Les avertissements ont disparu parce que l'IA a ajouté des `!` partout (`incident.AssignedTo!.Name`...). Le build est propre, mais le programme plante (`NullReferenceException`) sur un incident non assigné. |
+
+```bash
+git checkout demo/s03-ia-nullable
+dotnet run --project src/IncidentHub.Console   # plante à la fin
+git diff s03-etape3-null demo/s03-ia-nullable
 ```
 
 Les fichiers de ces branches sont des sorties de référence. Avant le cours,

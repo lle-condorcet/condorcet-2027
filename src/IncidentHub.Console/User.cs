@@ -34,6 +34,13 @@ public abstract class User
         return $"{RoleName()} : {Identity()}";
     }
 
+    // virtual : une version par défaut, qu'une classe dérivée PEUT redéfinir.
+    // (abstract, au contraire, OBLIGE chaque classe dérivée à l'écrire.)
+    public virtual string Signature()
+    {
+        return $"— {Name}";
+    }
+
     protected string Identity()
     {
         return $"{Name} <{Email}>";

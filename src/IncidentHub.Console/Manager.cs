@@ -11,4 +11,10 @@ public class Manager : User
     {
         return "Responsable";
     }
+
+    // override : le responsable remplace la signature par défaut.
+    public override string Signature()
+    {
+        return $"— {Name}, responsable";
+    }
 }

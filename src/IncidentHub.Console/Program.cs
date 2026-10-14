@@ -94,6 +94,7 @@ NombresDemo.Run();
 NullDemo.Run();
 ChainesDemo.Run();
 StaticDemo.Run();
+VirtualDemo.Run();
 
 static void NotifierTous(List<INotifier> notifiers, Incident incident, string message)
 {

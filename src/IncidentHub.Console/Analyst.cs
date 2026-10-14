@@ -19,4 +19,11 @@ public class Analyst : User
     {
         return $"Analyste ({Team})";
     }
+
+    // ToString() est déclarée virtual dans object, la classe de base de tout.
+    // Sans cette redéfinition, on afficherait « IncidentHub.Analyst ».
+    public override string ToString()
+    {
+        return $"{Name} ({Team})";
+    }
 }

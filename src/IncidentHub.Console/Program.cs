@@ -93,6 +93,7 @@ ValeurReferenceDemo.Run();
 NombresDemo.Run();
 NullDemo.Run();
 ChainesDemo.Run();
+StaticDemo.Run();
 
 static void NotifierTous(List<INotifier> notifiers, Incident incident, string message)
 {

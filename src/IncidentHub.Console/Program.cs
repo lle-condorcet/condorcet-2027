@@ -1,4 +1,5 @@
 using IncidentHub;
+using IncidentHub.Demos;
 
 Console.WriteLine("IncidentHub");
 Console.WriteLine();
@@ -82,6 +83,13 @@ catch (ArgumentException ex)
 }
 
 Console.WriteLine($"Statut inchangé : {autreIncident.Status}, {autreIncident.Comments.Count} commentaire(s)");
+
+Console.WriteLine();
+
+// Séance 3 : une démo par thème, dans le dossier Demos.
+Console.WriteLine("========== Séance 3 ==========");
+Console.WriteLine();
+ValeurReferenceDemo.Run();
 
 static void NotifierTous(List<INotifier> notifiers, Incident incident, string message)
 {

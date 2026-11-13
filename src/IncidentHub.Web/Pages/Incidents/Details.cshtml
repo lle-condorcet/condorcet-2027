@@ -1,0 +1,50 @@
+@* {id:guid} : la route n'accepte qu'un GUID. /Incidents/Details/abc -> 404
+   avant même d'exécuter le code de la page. *@
+@page "{id:guid}"
+@model IncidentHub.Web.Pages.Incidents.DetailsModel
+@{
+    ViewData["Title"] = Model.Incident.Title;
+}
+
+<h1>@Model.Incident.Title</h1>
+
+<p>
+    <span class="@Affichage.Badge(Model.Incident.Severity)">@Affichage.Libelle(Model.Incident.Severity)</span>
+    <span class="badge bg-light text-dark border">@Affichage.Libelle(Model.Incident.Status)</span>
+</p>
+
+<dl class="row">
+    <dt class="col-sm-3">Description</dt>
+    <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Incident.Description) ? "(aucune description)" : Model.Incident.Description)</dd>
+
+    <dt class="col-sm-3">Signalé par</dt>
+    <dd class="col-sm-9">@Model.Incident.ReportedBy.Name</dd>
+
+    <dt class="col-sm-3">Analyste</dt>
+    <dd class="col-sm-9">@(Model.Incident.AssignedTo?.Name ?? "Non assigné")</dd>
+
+    <dt class="col-sm-3">Signalé le</dt>
+    <dd class="col-sm-9">@Model.Incident.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+<h2 class="h4">Commentaires (@Model.Incident.Comments.Count)</h2>
+
+@if (Model.Incident.Comments.Count == 0)
+{
+    <p class="text-muted">Aucun commentaire.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var comment in Model.Incident.Comments)
+        {
+            <li class="list-group-item">
+                <strong>@comment.Author.Name</strong>
+                <small class="text-muted">(@comment.Author.RoleName(), @comment.WrittenAt.ToString("dd/MM/yyyy HH:mm"))</small>
+                <div>@comment.Text</div>
+            </li>
+        }
+    </ul>
+}
+
+<a asp-page="Index">&larr; Retour à la liste</a>

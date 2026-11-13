@@ -85,6 +85,34 @@ public class Incident
         _comments.Add(new Comment(text, author, writtenAt));
     }
 
+    // Modifie le titre et la description : mêmes règles qu'à la création.
+    public void UpdateDetails(string title, string description)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            throw new ArgumentException("Le titre d'un incident est obligatoire.");
+        }
+
+        EnsureNotClosed();
+        Title = title.Trim();
+        Description = description ?? "";
+    }
+
+    // Changer la sévérité est une décision à part (en vrai : réservée à un analyste).
+    public void ChangeSeverity(Severity severity)
+    {
+        EnsureNotClosed();
+        Severity = severity;
+    }
+
+    private void EnsureNotClosed()
+    {
+        if (Status == IncidentStatus.Closed)
+        {
+            throw new InvalidOperationException("Un incident clôturé ne peut plus être modifié.");
+        }
+    }
+
     // Un analyste commence à traiter l'incident.
     public void StartWork()
     {

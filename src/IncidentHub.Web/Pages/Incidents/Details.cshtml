@@ -62,4 +62,5 @@ else
     </ul>
 }
 
-<a asp-page="Index">&larr; Retour à la liste</a>
+<a asp-page="Edit" asp-route-id="@Model.Incident.Id" class="btn btn-outline-primary">Modifier</a>
+<a asp-page="Index" class="btn btn-link">&larr; Retour à la liste</a>

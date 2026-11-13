@@ -85,6 +85,26 @@ public class IncidentService
         return true;
     }
 
+    // Modifie un incident. Renvoie false s'il n'existe pas.
+    // newSeverity : null = on ne touche pas à la sévérité.
+    public async Task<bool> UpdateAsync(Guid id, string title, string? description, Severity? newSeverity)
+    {
+        var incident = await _db.Incidents.FirstOrDefaultAsync(i => i.Id == id);
+        if (incident is null)
+        {
+            return false;
+        }
+
+        incident.UpdateDetails(title, description ?? "");
+        if (newSeverity is not null)
+        {
+            incident.ChangeSeverity(newSeverity.Value);
+        }
+
+        await _db.SaveChangesAsync();       // UPDATE uniquement des colonnes modifiées
+        return true;
+    }
+
     // Les déclarants, pour la liste déroulante du formulaire de création.
     public async Task<List<Reporter>> GetReportersAsync()
     {

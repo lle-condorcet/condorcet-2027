@@ -1,0 +1,38 @@
+@page "{id:guid}"
+@model IncidentHub.Web.Pages.Incidents.EditModel
+@{
+    ViewData["Title"] = "Modifier un incident";
+}
+
+<h1>Modifier l'incident</h1>
+
+<p>
+    Sévérité actuelle :
+    <span class="@Affichage.Badge(Model.Incident.Severity)">@Affichage.Libelle(Model.Incident.Severity)</span>
+    (non modifiable dans ce formulaire)
+</p>
+
+@* Le formulaire n'envoie QUE Input.Title et Input.Description...
+   mais rien n'empêche quelqu'un d'ajouter d'autres champs à la requête. *@
+<form method="post" style="max-width: 40rem">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Title" class="form-label"></label>
+        <input asp-for="Input.Title" class="form-control" />
+        <span asp-validation-for="Input.Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Description" class="form-label"></label>
+        <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Input.Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a asp-page="Details" asp-route-id="@Model.Incident.Id" class="btn btn-link">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 *.db
 *.db-shm
 *.db-wal
+
+# Base SQLite des séances 4 et 5 (à publier pour les étudiants)
+!donnees/incidenthub.db

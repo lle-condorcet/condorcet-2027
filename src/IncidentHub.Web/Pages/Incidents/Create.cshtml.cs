@@ -1,0 +1,50 @@
+using IncidentHub.Web.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace IncidentHub.Web.Pages.Incidents;
+
+// URL : /Incidents/Create
+public class CreateModel : PageModel
+{
+    private readonly IncidentService _service;
+
+    public CreateModel(IncidentService service)
+    {
+        _service = service;
+    }
+
+    // [BindProperty] : au POST, ASP.NET Core remplit Input avec les champs
+    // envoyés par le formulaire (Input.Title, Input.Severity...).
+    [BindProperty]
+    public CreateIncidentInput Input { get; set; } = new();
+
+    // Options de la liste déroulante des déclarants.
+    public SelectList Reporters { get; private set; } = null!;
+
+    // GET : affiche le formulaire vide.
+    public async Task OnGetAsync()
+    {
+        await LoadReportersAsync();
+    }
+
+    // POST : le formulaire a été envoyé.
+    public async Task<IActionResult> OnPostAsync()
+    {
+        // Aucune validation pour l'instant : on fait confiance à ce qui arrive.
+        // Un titre vide arrive jusqu'au constructeur d'Incident, qui lève une
+        // ArgumentException : l'utilisateur tombe sur la page d'erreur.
+        var id = await _service.CreateAsync(Input.Title, Input.Description, Input.Severity, Input.ReporterId);
+
+        // Post-Redirect-Get : on répond par une redirection (302) vers la page
+        // de détail. Un F5 rechargera cette page (GET), sans recréer l'incident.
+        return RedirectToPage("Details", new { id });
+    }
+
+    private async Task LoadReportersAsync()
+    {
+        var reporters = await _service.GetReportersAsync();
+        Reporters = new SelectList(reporters, nameof(Reporter.Id), nameof(Reporter.Name));
+    }
+}

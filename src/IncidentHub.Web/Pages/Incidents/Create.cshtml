@@ -1,0 +1,42 @@
+@page
+@model IncidentHub.Web.Pages.Incidents.CreateModel
+@{
+    ViewData["Title"] = "Signaler un incident";
+}
+
+<h1>Signaler un incident</h1>
+
+@* method="post" : le tag helper <form> ajoute un champ caché
+   __RequestVerificationToken (jeton anti-falsification, voir Edit). *@
+<form method="post" style="max-width: 40rem">
+    <div class="mb-3">
+        @* asp-for : génère id, name="Input.Title" et la valeur actuelle. *@
+        <label asp-for="Input.Title" class="form-label">Titre</label>
+        <input asp-for="Input.Title" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Description" class="form-label">Description</label>
+        <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Severity" class="form-label">Sévérité</label>
+        <select asp-for="Input.Severity" class="form-select">
+            @foreach (var severity in Enum.GetValues<Severity>())
+            {
+                <option value="@severity">@Affichage.Libelle(severity)</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.ReporterId" class="form-label">Déclarant</label>
+        <select asp-for="Input.ReporterId" asp-items="Model.Reporters" class="form-select">
+            <option value="">-- Choisir --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Signaler</button>
+    <a asp-page="Index" class="btn btn-link">Annuler</a>
+</form>

@@ -64,4 +64,31 @@ public class IncidentService
                 .ThenInclude(c => c.Author)                      // ...et, pour chacun, son auteur
             .FirstOrDefaultAsync(i => i.Id == id);
     }
+
+    // Les déclarants, pour la liste déroulante du formulaire de création.
+    public async Task<List<Reporter>> GetReportersAsync()
+    {
+        return await _db.Users
+            .OfType<Reporter>()             // WHERE Role = 'Reporter'
+            .AsNoTracking()
+            .OrderBy(r => r.Name)
+            .ToListAsync();
+    }
+
+    // Crée un incident et renvoie son identifiant.
+    // Les règles (titre obligatoire...) sont vérifiées par le domaine, pas ici.
+    public async Task<Guid> CreateAsync(string title, string? description, Severity severity, Guid reporterId)
+    {
+        var reporter = await _db.Users.FindAsync(reporterId);
+        if (reporter is null)
+        {
+            throw new ArgumentException("Le déclarant indiqué n'existe pas.");
+        }
+
+        var incident = new Incident(title, description ?? "", severity, reporter);
+
+        _db.Incidents.Add(incident);
+        await _db.SaveChangesAsync();       // INSERT INTO Incidents ...
+        return incident.Id;
+    }
 }

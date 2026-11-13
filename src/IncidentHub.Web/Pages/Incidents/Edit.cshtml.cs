@@ -25,7 +25,8 @@ namespace IncidentHub.Web.Pages.Incidents;
 public class EditModel : PageModel
 {
     // Interrupteur de la démo : true = version vulnérable, false = version sûre.
-    private static readonly bool DemoVulnerable = true;
+    // Sur main : version sûre. La version vulnérable est au tag s07-etape5-overposting.
+    private static readonly bool DemoVulnerable = false;
 
     private readonly IncidentService _service;
 

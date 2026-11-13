@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Le domaine d'IncidentHub (contrat du Livrable 1), partagé par les applications web. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>IncidentHub</RootNamespace>
+  </PropertyGroup>
+
+</Project>

@@ -49,3 +49,12 @@
     <button type="submit" class="btn btn-primary">Signaler</button>
     <a asp-page="Index" class="btn btn-link">Annuler</a>
 </form>
+
+@section Scripts {
+    @* Validation côté navigateur : jQuery Validation lit les attributs data-val-*
+       générés à partir des DataAnnotations et bloque l'envoi d'un formulaire invalide.
+       C'est du confort pour l'utilisateur, PAS de la sécurité : on la contourne
+       en désactivant JavaScript, en modifiant la page dans les DevTools ou en
+       envoyant le POST directement avec curl. Seul le serveur fait foi. *@
+    <partial name="_ValidationScriptsPartial" />
+}

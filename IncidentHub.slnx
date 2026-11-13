@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/IncidentHub.Blazor.Client/IncidentHub.Blazor.Client.csproj" />
+    <Project Path="src/IncidentHub.Blazor/IncidentHub.Blazor.csproj" />
     <Project Path="src/IncidentHub.Console/IncidentHub.Console.csproj" />
     <Project Path="src/IncidentHub.Domain/IncidentHub.Domain.csproj" />
     <Project Path="src/IncidentHub.Web/IncidentHub.Web.csproj" />

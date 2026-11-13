@@ -1,0 +1,51 @@
+@page "/incidents-serveur"
+@* InteractiveServer : le composant s'exécute SUR LE SERVEUR. Le navigateur
+   envoie les clics et reçoit les morceaux de page à mettre à jour,
+   par une connexion SignalR (WebSocket) qui reste ouverte. *@
+@rendermode InteractiveServer
+@using IncidentHub.Blazor.Data
+@inject InMemoryIncidentRepository Repository
+
+<PageTitle>Incidents (serveur)</PageTitle>
+
+<h1>Incidents : rendu InteractiveServer</h1>
+<p class="text-muted">
+    Ce composant tourne sur le serveur : il lit directement le dépôt en mémoire,
+    aucune API n'est nécessaire. Son code C# n'est jamais envoyé au navigateur.
+</p>
+
+<div class="mb-3" style="max-width: 20rem">
+    <label class="form-label" for="filtre">Sévérité</label>
+    @* @bind : quand la valeur change, Blazor met à jour « filtre » et réaffiche. *@
+    <select id="filtre" class="form-select" @bind="filtre">
+        <option value="">Toutes</option>
+        @foreach (var severite in Enum.GetValues<Severity>())
+        {
+            <option value="@severite">@Affichage.Libelle(severite.ToString())</option>
+        }
+    </select>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr><th>Titre</th><th>Sévérité</th><th>Analyste</th><th>Signalé le</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var incident in Visibles)
+        {
+            <tr>
+                <td>@incident.Title</td>
+                <td><span class="@Affichage.Badge(incident.Severity.ToString())">@Affichage.Libelle(incident.Severity.ToString())</span></td>
+                <td>@(incident.AssignedTo?.Name ?? "Non assigné")</td>
+                <td>@incident.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private string filtre = "";
+
+    private IEnumerable<Incident> Visibles =>
+        Repository.GetAll().Where(i => filtre == "" || i.Severity.ToString() == filtre);
+}

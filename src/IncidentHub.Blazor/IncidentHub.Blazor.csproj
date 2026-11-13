@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Projet serveur Blazor : héberge l'application, les composants InteractiveServer
+       et l'API /api/incidents. Le projet .Client contient ce qui part dans le navigateur. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IncidentHub.Blazor.Client\IncidentHub.Blazor.Client.csproj" />
+    <ProjectReference Include="..\IncidentHub.Domain\IncidentHub.Domain.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.15" />
+  </ItemGroup>
+
+</Project>

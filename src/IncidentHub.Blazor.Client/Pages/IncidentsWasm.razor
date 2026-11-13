@@ -1,0 +1,72 @@
+@page "/incidents-wasm"
+@* InteractiveWebAssembly : le composant est téléchargé et exécuté dans le navigateur.
+   prerender: false -> pas de premier rendu sur le serveur, tout se passe côté client. *@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@inject HttpClient Http
+
+@* =====================================================================
+   ATTENTION : ce code est téléchargé dans le navigateur : tout ce qu'il
+   contient est lisible par l'utilisateur (DevTools > Réseau > _framework,
+   fichier IncidentHub.Blazor.Client.*.wasm, décompilable).
+   -> Jamais de secret ici (mot de passe, clé d'API, chaîne de connexion).
+   -> Jamais de contrôle de sécurité qui n'existerait QUE dans ce code :
+      l'utilisateur peut le modifier ou appeler l'API directement.
+   ===================================================================== *@
+
+<PageTitle>Incidents (WebAssembly)</PageTitle>
+
+<h1>Incidents : rendu InteractiveWebAssembly</h1>
+<p class="text-muted">
+    Ce composant tourne dans votre navigateur. Il n'a pas accès au serveur :
+    il appelle l'API <code>GET /api/incidents</code> (onglet Réseau des DevTools).
+</p>
+
+<div class="mb-3" style="max-width: 20rem">
+    <label class="form-label" for="filtre">Sévérité</label>
+    <select id="filtre" class="form-select" @bind="filtre">
+        <option value="">Toutes</option>
+        @foreach (var severite in Affichage.Severites)
+        {
+            <option value="@severite">@Affichage.Libelle(severite)</option>
+        }
+    </select>
+</div>
+
+@if (incidents is null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr><th>Titre</th><th>Sévérité</th><th>Analyste</th><th>Signalé le</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var incident in Visibles)
+            {
+                <tr>
+                    <td>@incident.Title</td>
+                    <td><span class="@Affichage.Badge(incident.Severity)">@Affichage.Libelle(incident.Severity)</span></td>
+                    <td>@(incident.AnalystName ?? "Non assigné")</td>
+                    <td>@incident.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<IncidentDto>? incidents;
+    private string filtre = "";
+
+    // Le filtre est appliqué ICI, dans le navigateur : l'API a déjà envoyé
+    // TOUS les incidents. Filtrer à l'écran, ce n'est pas cacher les données.
+    private IEnumerable<IncidentDto> Visibles =>
+        incidents!.Where(i => filtre == "" || i.Severity == filtre);
+
+    protected override async Task OnInitializedAsync()
+    {
+        incidents = await Http.GetFromJsonAsync<List<IncidentDto>>("api/incidents");
+    }
+}

@@ -1,0 +1,35 @@
+@page
+@model IncidentHub.Web.Pages.Incidents.IndexModel
+@{
+    ViewData["Title"] = "Incidents";
+}
+
+<h1>Incidents</h1>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Sévérité</th>
+            <th>Statut</th>
+            <th>Analyste</th>
+            <th>Signalé le</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Razor : @ fait passer du HTML au C#. Une ligne <tr> par incident. *@
+        @foreach (var incident in Model.Incidents)
+        {
+            <tr>
+                <td>
+                    @* asp-page + asp-route-id produisent /Incidents/Details/<id> *@
+                    <a asp-page="Details" asp-route-id="@incident.Id">@incident.Title</a>
+                </td>
+                <td><span class="@Affichage.Badge(incident.Severity)">@Affichage.Libelle(incident.Severity)</span></td>
+                <td>@Affichage.Libelle(incident.Status)</td>
+                <td>@(incident.AssignedTo?.Name ?? "Non assigné")</td>
+                <td>@incident.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

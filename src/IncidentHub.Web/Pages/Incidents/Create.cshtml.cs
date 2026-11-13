@@ -32,10 +32,18 @@ public class CreateModel : PageModel
     // POST : le formulaire a été envoyé.
     public async Task<IActionResult> OnPostAsync()
     {
-        // Aucune validation pour l'instant : on fait confiance à ce qui arrive.
-        // Un titre vide arrive jusqu'au constructeur d'Incident, qui lève une
-        // ArgumentException : l'utilisateur tombe sur la page d'erreur.
-        var id = await _service.CreateAsync(Input.Title, Input.Description, Input.Severity, Input.ReporterId);
+        // Validation côté serveur : ModelState contient les erreurs des DataAnnotations
+        // (et celles de liaison, ex. Input.Severity=abc). Si une règle n'est pas
+        // respectée, on réaffiche le formulaire avec les messages, sans rien créer.
+        if (!ModelState.IsValid)
+        {
+            await LoadReportersAsync();   // la liste déroulante doit être rechargée
+            return Page();
+        }
+
+        // ReporterId n'est pas null ici : [Required] l'a vérifié.
+        var id = await _service.CreateAsync(Input.Title, Input.Description, Input.Severity,
+            Input.ReporterId ?? Guid.Empty);
 
         // Post-Redirect-Get : on répond par une redirection (302) vers la page
         // de détail. Un F5 rechargera cette page (GET), sans recréer l'incident.

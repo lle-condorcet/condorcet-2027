@@ -12,7 +12,13 @@ using Microsoft.Extensions.WebEncoders;
 var builder = WebApplication.CreateBuilder(args);
 
 // ---- 1. Services (injection de dépendances) ----
-builder.Services.AddRazorPages();   // active les pages .cshtml du dossier Pages/
+builder.Services.AddRazorPages()    // active les pages .cshtml du dossier Pages/
+    .AddMvcOptions(options =>       // messages en français quand une valeur ne peut pas être lue
+    {
+        var messages = options.ModelBindingMessageProvider;
+        messages.SetAttemptedValueIsInvalidAccessor((valeur, champ) => $"La valeur « {valeur} » n'est pas valide pour {champ}.");
+        messages.SetValueIsInvalidAccessor(valeur => $"La valeur « {valeur} » n'est pas valide.");
+    });
 
 // Le DbContext, en « scoped » : une instance par requête HTTP.
 // La chaîne de connexion vient de appsettings.json (ConnectionStrings:IncidentHub).

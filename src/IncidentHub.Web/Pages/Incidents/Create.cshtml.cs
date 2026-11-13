@@ -41,13 +41,25 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        // ReporterId n'est pas null ici : [Required] l'a vérifié.
-        var id = await _service.CreateAsync(Input.Title, Input.Description, Input.Severity,
-            Input.ReporterId ?? Guid.Empty);
+        try
+        {
+            // ReporterId n'est pas null ici : [Required] l'a vérifié.
+            var id = await _service.CreateAsync(Input.Title, Input.Description, Input.Severity,
+                Input.ReporterId ?? Guid.Empty);
 
-        // Post-Redirect-Get : on répond par une redirection (302) vers la page
-        // de détail. Un F5 rechargera cette page (GET), sans recréer l'incident.
-        return RedirectToPage("Details", new { id });
+            // Post-Redirect-Get : on répond par une redirection (302) vers la page
+            // de détail. Un F5 rechargera cette page (GET), sans recréer l'incident.
+            return RedirectToPage("Details", new { id });
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            // Le domaine (ou le service) a refusé : on affiche son message
+            // dans le formulaire au lieu d'une page d'erreur.
+            // Essai : POST forgé avec un Input.ReporterId qui n'existe pas.
+            ModelState.AddModelError(string.Empty, ex.Message);
+            await LoadReportersAsync();
+            return Page();
+        }
     }
 
     private async Task LoadReportersAsync()

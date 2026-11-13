@@ -85,7 +85,10 @@ namespace IncidentHub.Web.Data.Migrations
 
                     b.HasIndex("ReportedById");
 
-                    b.ToTable("Incidents");
+                    b.ToTable("Incidents", t =>
+                        {
+                            t.HasCheckConstraint("CK_Incidents_Title_NonVide", "length(trim(\"Title\")) > 0");
+                        });
                 });
 
             modelBuilder.Entity("IncidentHub.User", b =>

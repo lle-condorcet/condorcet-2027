@@ -29,4 +29,25 @@ public class DetailsModel : PageModel
         Incident = incident;
         return Page();           // affiche Details.cshtml
     }
+
+    // Bouton « Prendre en charge » : POST /Incidents/Details/{id}?handler=StartWork
+    // Le nom du handler vient du nom de la méthode : OnPost + StartWork + Async.
+    public async Task<IActionResult> OnPostStartWorkAsync(Guid id)
+    {
+        try
+        {
+            if (!await _service.StartWorkAsync(id))
+            {
+                return NotFound();
+            }
+
+            return RedirectToPage(new { id });   // Post-Redirect-Get
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Refus du domaine (pas d'analyste, mauvais statut) : on l'affiche proprement.
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return await OnGetAsync(id);         // recharge l'incident et réaffiche la page
+        }
+    }
 }

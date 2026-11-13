@@ -13,6 +13,21 @@
     <span class="badge bg-light text-dark border">@Affichage.Libelle(Model.Incident.Status)</span>
 </p>
 
+@if (!ViewData.ModelState.IsValid)
+{
+    @* Le message du domaine (ex. « aucun analyste n'est assigné »). *@
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+}
+
+@* Le bouton n'apparaît que pour un incident ouvert. Ce n'est qu'un confort :
+   un POST forgé sur un autre incident est de toute façon refusé par le domaine. *@
+@if (Model.Incident.Status == IncidentStatus.Open)
+{
+    <form method="post" asp-page-handler="StartWork" asp-route-id="@Model.Incident.Id" class="mb-3">
+        <button type="submit" class="btn btn-success">Prendre en charge</button>
+    </form>
+}
+
 <dl class="row">
     <dt class="col-sm-3">Description</dt>
     <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Incident.Description) ? "(aucune description)" : Model.Incident.Description)</dd>

@@ -65,6 +65,26 @@ public class IncidentService
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
+    // Un analyste commence à traiter l'incident. Renvoie false si l'incident n'existe pas.
+    // Si la règle métier est violée, le domaine lève InvalidOperationException.
+    public async Task<bool> StartWorkAsync(Guid id)
+    {
+        // Pas d'AsNoTracking : on va MODIFIER l'objet, EF Core doit le surveiller.
+        // Include obligatoire : sans lui, AssignedTo serait null et le domaine
+        // refuserait à tort (« aucun analyste »).
+        var incident = await _db.Incidents
+            .Include(i => i.AssignedTo)
+            .FirstOrDefaultAsync(i => i.Id == id);
+        if (incident is null)
+        {
+            return false;
+        }
+
+        incident.StartWork();               // la règle est dans le domaine
+        await _db.SaveChangesAsync();       // UPDATE Incidents SET Status = 'InProgress' ...
+        return true;
+    }
+
     // Les déclarants, pour la liste déroulante du formulaire de création.
     public async Task<List<Reporter>> GetReportersAsync()
     {

@@ -48,6 +48,13 @@ public class IncidentHubDbContext : DbContext
             incident.Property(i => i.Title).HasMaxLength(120);
             incident.Property(i => i.Description).HasMaxLength(2000);
 
+            // Dernier étage de validation : la base elle-même refuse un titre vide,
+            // même si quelqu'un contourne l'application (script, client SQL...).
+            // Essai dans un client SQLite :
+            //   UPDATE Incidents SET Title = '   ';  -> CHECK constraint failed
+            incident.ToTable(t => t.HasCheckConstraint(
+                "CK_Incidents_Title_NonVide", """length(trim("Title")) > 0"""));
+
             // Enums stockés en texte ("Critical") plutôt qu'en nombre (3) :
             // lisible dans la base, et ajouter une valeur ne décale rien.
             incident.Property(i => i.Severity).HasConversion<string>().HasMaxLength(20);

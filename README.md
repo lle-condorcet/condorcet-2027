@@ -8,7 +8,9 @@ classe `Incident` évolue d'une version naïve vers une version qui protège ses
 données et applique des règles métier (séance 1), puis comment le modèle
 s'enrichit avec l'héritage, l'abstraction, les interfaces et la composition
 (séance 2), et enfin les bases du langage C# : types, null, chaînes, static,
-virtual et enum `[Flags]` (séance 3).
+virtual et enum `[Flags]` (séance 3). Le domaine passe ensuite sur le web :
+Razor Pages et Blazor (séance 5), base de données avec EF Core (séance 6),
+formulaires et validation, jusqu'à une attaque par overposting (séance 7).
 
 Le code est **lu et commenté ensemble**, il n'est pas écrit en direct.
 Chaque étape correspond à un tag Git.
@@ -79,11 +81,70 @@ fin de `Program.cs` et affichée sous un titre `=== ... ===`.
 | `s03-etape6-virtual-override` | `User.Signature()` est `virtual`, `Manager` la redéfinit avec `override`. `Analyst` redéfinit `ToString()`. `Reporter` devient `sealed`. `VirtualDemo` : appel polymorphe sur une `List<User>`. |
 | `s03-etape7-flags` | Enum `[Flags] Permission` (Read, Comment, Assign, Close, All) et propriété abstraite `Permissions` sur `User`. `FlagsDemo` : `\|` pour combiner, `HasFlag` et `&` pour tester, valeur numérique et `ToString()` (« Read, Comment »). Parallèle avec les droits Unix `rwx` (4 + 2 + 1 = 7). |
 
-La branche `main` correspond à l'état final `s03-etape7-flags`.
-
 ```bash
 git diff s03-etape5-static s03-etape6-virtual-override -- src/IncidentHub.Console/User.cs
 ```
+
+## Séance 5 — Le web : Razor Pages et Blazor
+
+Le domaine du Livrable 1 est extrait dans la bibliothèque
+`src/IncidentHub.Domain` (namespace `IncidentHub`), avec le jeu de données
+`DemoData` : les mêmes 8 utilisateurs et 12 incidents que `seed.sql` (séance 4).
+
+```bash
+dotnet run --project src/IncidentHub.Web --urls http://localhost:5199
+# http://localhost:5199/Incidents
+```
+
+| Tag | Ce que l'on montre |
+|-----|--------------------|
+| `s05-etape1-projet-web` | Projet `IncidentHub.Web` (gabarit `webapp` nettoyé). `Program.cs` commenté ligne à ligne : les services, puis le pipeline dans l'ordre (gestion d'erreurs, HTTPS, fichiers statiques, routage, autorisation, `MapRazorPages`). `_Layout` avec le menu Accueil / Incidents. |
+| `s05-etape2-liste` | `IIncidentRepository` et `InMemoryIncidentRepository` enregistré en singleton (injection de dépendances). Page `Incidents/Index` : `PageModel`, `@foreach`, badge de sévérité, « Non assigné », liens `asp-page` / `asp-route-id`. |
+| `s05-etape3-detail` | Page `Incidents/Details` avec `@page "{id:guid}"` : `OnGet` renvoie `NotFound()` (404) si l'id est inconnu ; `/Incidents/Details/abc` est refusé par la route. Affichage des commentaires. |
+| `s05-etape4-blazor` | Projets `IncidentHub.Blazor` et `IncidentHub.Blazor.Client` (`dotnet new blazor --interactivity Auto`). La même liste filtrable par sévérité en deux versions : `/incidents-serveur` (`InteractiveServer`, lit le dépôt directement) et `/incidents-wasm` (`InteractiveWebAssembly`, tourne dans le navigateur et appelle la minimal API `GET /api/incidents` qui renvoie des DTO). Ce qui part dans le navigateur est lisible par l'utilisateur. |
+
+```bash
+dotnet run --project src/IncidentHub.Blazor --urls http://localhost:5198
+# http://localhost:5198/incidents-wasm  (DevTools > Réseau : api/incidents, _framework/*.wasm)
+```
+
+## Séance 6 — Les données avec EF Core
+
+La base SQLite `incidenthub-web.db` est créée et remplie au premier démarrage
+(elle est ignorée par Git : la supprimer pour repartir de zéro).
+
+| Tag | Ce que l'on montre |
+|-----|--------------------|
+| `s06-etape1-dbcontext` | Paquets `Microsoft.EntityFrameworkCore.Sqlite` et `.Design`. `IncidentHubDbContext` et la Fluent API dans `OnModelCreating` : héritage TPH (une table `Users`, discriminateur `Role`), enums stockés en texte, setters privés, clés étrangères fantômes `ReportedById` / `AssignedToId`, liste privée `_comments` mappée par le champ. Constructeurs privés « pour EF Core » dans le domaine. Chaîne de connexion dans `appsettings.json`. |
+| `s06-etape2-migration` | Outil local `dotnet-ef` (`dotnet-tools.json`), migration `InitialCreate`, `SeedData` qui remplit une base vide. Au démarrage : `Database.Migrate()` puis seed. |
+| `s06-etape3-service` | Couche application `IncidentService` (scoped) : les pages ne voient plus ni dépôt ni `DbContext`. `AsNoTracking`, `Include` (déclarant, analyste), `ThenInclude` (auteurs des commentaires). Le SQL généré s'affiche dans la console. |
+| `s06-etape4-n-plus-1` | `GetAllNaiveAsync` charge l'analyste de chaque incident dans une boucle. `/Incidents?naif=true` : 13 requêtes SQL dans la console pour 12 incidents, contre 1 seule avec `Include`. |
+
+```bash
+dotnet tool restore
+dotnet ef migrations list --project src/IncidentHub.Web
+git diff s06-etape3-service s06-etape4-n-plus-1 -- src/IncidentHub.Web/Services/IncidentService.cs
+```
+
+## Séance 7 — Formulaires, validation et overposting
+
+| Tag | Ce que l'on montre |
+|-----|--------------------|
+| `s07-etape1-formulaire` | Page `Incidents/Create` : modèle de saisie `CreateIncidentInput` en `[BindProperty]`, liste déroulante des déclarants, Post-Redirect-Get vers Details. Sans validation, un titre vide fait remonter l'`ArgumentException` du domaine jusqu'à la page d'erreur. |
+| `s07-etape2-validation-serveur` | DataAnnotations (`[Required]`, `[StringLength(120, MinimumLength = 5)]`, `[EnumDataType]`) avec messages en français, `if (!ModelState.IsValid) return Page();`, `asp-validation-for` et `asp-validation-summary`. |
+| `s07-etape3-validation-client` | `_ValidationScriptsPartial` : le navigateur bloque le formulaire invalide. Confort, pas sécurité : curl ou les DevTools la contournent. |
+| `s07-etape4-domaine-et-base` | Les exceptions du domaine deviennent des erreurs de `ModelState`. Bouton « Prendre en charge » sur Details (`OnPostStartWorkAsync`) : refus propre si aucun analyste. Contrainte `CHECK` sur le titre en base (migration `TitreNonVide`). Les quatre étages : navigateur, serveur, domaine, base. |
+| `s07-etape5-overposting` | Page `Incidents/Edit` : `EditIncidentInputVulnerable` (avec `Severity`) contre `EditIncidentInput` (titre et description), choisis par `DemoVulnerable`. Un POST forgé avec `Input.Severity=Low` fait passer un incident critique en faible dans la version vulnérable. Un POST sans jeton anti-falsification reçoit 400. |
+
+Les commandes pour rejouer les attaques sont en commentaire en tête de
+`src/IncidentHub.Web/Pages/Incidents/Edit.cshtml.cs`. Pour l'étage « base » :
+
+```sql
+-- dans un client SQLite ouvert sur src/IncidentHub.Web/incidenthub-web.db
+UPDATE Incidents SET Title = '   ';   -- CHECK constraint failed: CK_Incidents_Title_NonVide
+```
+
+La branche `main` correspond à l'état final `s07-etape5-overposting`.
 
 ## Branches « démo IA »
 

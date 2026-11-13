@@ -19,8 +19,11 @@ public class IndexModel : PageModel
     public IReadOnlyList<Incident> Incidents { get; private set; } = [];
 
     // Appelé pour chaque requête GET sur /Incidents.
-    public async Task OnGetAsync()
+    // naif vient de la query string : /Incidents?naif=true (démo du N+1).
+    public async Task OnGetAsync(bool naif = false)
     {
-        Incidents = await _service.GetAllAsync();
+        Incidents = naif
+            ? await _service.GetAllNaiveAsync()
+            : await _service.GetAllAsync();
     }
 }

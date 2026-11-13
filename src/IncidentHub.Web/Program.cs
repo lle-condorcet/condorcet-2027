@@ -30,6 +30,15 @@ builder.Services.Configure<WebEncoderOptions>(options =>
 
 var app = builder.Build();
 
+// Au démarrage : on crée ou met à jour la base (migrations), puis on la remplit
+// si elle est vide. Le DbContext est « scoped » : il faut ouvrir un scope.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<IncidentHubDbContext>();
+    db.Database.Migrate();
+    SeedData.Initialize(db);
+}
+
 // ---- 2. Pipeline : les middlewares, dans l'ordre ----
 
 // Gestion d'erreurs : en production, une page d'erreur neutre (pas de pile d'appels

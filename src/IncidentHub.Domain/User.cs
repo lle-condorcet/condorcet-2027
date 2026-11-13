@@ -10,6 +10,13 @@ public abstract class User
     public string Name { get; private set; }
     public string Email { get; private set; }
 
+    // Pour EF Core (voir Incident) : les classes dérivées ont aussi le leur.
+    protected User()
+    {
+        Name = "";
+        Email = "";
+    }
+
     // protected : seules les classes dérivées appellent ce constructeur.
     protected User(string name, string email)
     {

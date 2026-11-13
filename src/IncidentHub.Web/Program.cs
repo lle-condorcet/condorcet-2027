@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using IncidentHub.Web.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.WebEncoders;
 
 // Point d'entrée de l'application web IncidentHub.
@@ -15,6 +16,11 @@ builder.Services.AddRazorPages();   // active les pages .cshtml du dossier Pages
 // « Quand une page demande un IIncidentRepository, donne-lui CETTE instance. »
 // Singleton : une seule liste en mémoire, partagée par toutes les requêtes.
 builder.Services.AddSingleton<IIncidentRepository, InMemoryIncidentRepository>();
+
+// Le DbContext, en « scoped » : une instance par requête HTTP.
+// La chaîne de connexion vient de appsettings.json (ConnectionStrings:IncidentHub).
+builder.Services.AddDbContext<IncidentHubDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("IncidentHub")));
 
 // Razor encode tout ce qu'il affiche (protection contre l'injection de HTML/JS).
 // Par défaut, il encode aussi les accents (é -> &#xE9;) ; on les laisse lisibles.

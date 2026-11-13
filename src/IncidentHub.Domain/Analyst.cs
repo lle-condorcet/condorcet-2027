@@ -5,6 +5,12 @@ public class Analyst : User
 {
     public string Team { get; private set; }
 
+    // Pour EF Core (voir Incident).
+    private Analyst()
+    {
+        Team = "";
+    }
+
     public Analyst(string name, string email, string team) : base(name, email)
     {
         if (string.IsNullOrWhiteSpace(team))

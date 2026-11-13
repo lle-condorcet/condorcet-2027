@@ -22,6 +22,16 @@ public class Incident
     private readonly List<Comment> _comments = new();
     public IReadOnlyList<Comment> Comments => _comments.AsReadOnly();
 
+    // Pour EF Core : il recrée l'objet lu en base avec ce constructeur vide,
+    // puis remplit les propriétés (même à setter privé). Privé : le reste du
+    // code est toujours obligé de passer par le constructeur qui valide.
+    private Incident()
+    {
+        Title = "";
+        Description = "";
+        ReportedBy = null!;
+    }
+
     // createdAt est facultatif : il ne sert qu'à importer un historique
     // (données de démonstration). Sinon, c'est la date du jour.
     public Incident(string title, string description, Severity severity, User reportedBy,

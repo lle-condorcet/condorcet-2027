@@ -480,3 +480,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Bases SQLite locales créées par IncidentHub.Web (EF Core)
+*.db
+*.db-shm
+*.db-wal

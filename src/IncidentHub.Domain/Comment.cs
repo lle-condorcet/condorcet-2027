@@ -9,6 +9,13 @@ public class Comment
     public User Author { get; private set; }
     public DateTime WrittenAt { get; private set; }
 
+    // Pour EF Core (voir Incident).
+    private Comment()
+    {
+        Text = "";
+        Author = null!;
+    }
+
     // writtenAt est facultatif : il ne sert qu'à importer un historique
     // (données de démonstration). Sinon, c'est la date du jour.
     public Comment(string text, User author, DateTime? writtenAt = null)

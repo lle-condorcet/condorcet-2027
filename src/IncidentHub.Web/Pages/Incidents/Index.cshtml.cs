@@ -1,4 +1,4 @@
-using IncidentHub.Web.Data;
+using IncidentHub.Web.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace IncidentHub.Web.Pages.Incidents;
@@ -6,21 +6,21 @@ namespace IncidentHub.Web.Pages.Incidents;
 // URL : /Incidents (le dossier Pages/Incidents + le fichier Index).
 public class IndexModel : PageModel
 {
-    private readonly IIncidentRepository _repository;
+    private readonly IncidentService _service;
 
-    // Injection de dépendances : ASP.NET Core fournit le dépôt
+    // Injection de dépendances : ASP.NET Core fournit le service
     // enregistré dans Program.cs. La page ne fait jamais « new ».
-    public IndexModel(IIncidentRepository repository)
+    public IndexModel(IncidentService service)
     {
-        _repository = repository;
+        _service = service;
     }
 
     // Ce que la vue (Index.cshtml) va afficher.
     public IReadOnlyList<Incident> Incidents { get; private set; } = [];
 
     // Appelé pour chaque requête GET sur /Incidents.
-    public void OnGet()
+    public async Task OnGetAsync()
     {
-        Incidents = _repository.GetAll();
+        Incidents = await _service.GetAllAsync();
     }
 }

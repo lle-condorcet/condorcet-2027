@@ -12,6 +12,7 @@
             <th>Titre</th>
             <th>Sévérité</th>
             <th>Statut</th>
+            <th>Déclarant</th>
             <th>Analyste</th>
             <th>Signalé le</th>
         </tr>
@@ -27,6 +28,7 @@
                 </td>
                 <td><span class="@Affichage.Badge(incident.Severity)">@Affichage.Libelle(incident.Severity)</span></td>
                 <td>@Affichage.Libelle(incident.Status)</td>
+                <td>@incident.ReportedBy.Name</td>
                 <td>@(incident.AssignedTo?.Name ?? "Non assigné")</td>
                 <td>@incident.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
             </tr>

@@ -15,6 +15,16 @@ formulaires et validation, jusqu'à une attaque par overposting (séance 7).
 Le code est **lu et commenté ensemble**, il n'est pas écrit en direct.
 Chaque étape correspond à un tag Git.
 
+## Documentation
+
+Le dossier `docs/` rassemble la documentation du cours, au format Word :
+
+- `Cheatsheet_Installation_poste_dotnet.docx` : installer le SDK .NET 10, Git, Rider ou Visual Studio Code, et ouvrir la base de données ;
+- `Cheatsheet_Git_et_Fork.docx` : récupérer ce dépôt, naviguer dans les étapes, se tenir à jour, en ligne de commande ou avec Fork ;
+- `seances/` : un syllabus par séance (S01 à S07), qui reprend en texte tout ce qui a été vu, avec des extraits de code.
+
+Les slides sont dans `slides/`, la base SQLite du cours et son tutoriel dans `donnees/`.
+
 ## Prérequis
 
 - [.NET SDK 10](https://dotnet.microsoft.com/download) (`dotnet --version` doit afficher 10.x)
@@ -24,8 +34,8 @@ Chaque étape correspond à un tag Git.
 ## Récupérer une étape
 
 ```bash
-git clone <url-du-depot> incidenthub-demo
-cd incidenthub-demo
+git clone https://github.com/lle-condorcet/condorcet-2027.git
+cd condorcet-2027
 
 git tag -l                                  # liste des étapes
 git checkout s01-etape1-classe-incident     # se placer sur une étape
